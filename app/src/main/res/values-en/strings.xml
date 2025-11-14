@@ -14,5 +14,11 @@
     <string name="dialog_message_congratulations">Congratulations!!\nYou hunted %1$d ducks</string>
     <string name="button_restart">Restart</string>
     <string name="button_close">Close</string>
-
+    <!-- Strings faltantes -->
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet</string>
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
 </resources>
+
