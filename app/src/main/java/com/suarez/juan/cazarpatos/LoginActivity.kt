@@ -3,6 +3,7 @@ package com.suarez.juan.cazarpatos
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -12,9 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 class LoginActivity : AppCompatActivity() {
     lateinit var manejadorArchivo: FileHandler
     lateinit var editTextEmail: EditText
-    lateinit var editTextPassword:EditText
+    lateinit var editTextPassword: EditText
     lateinit var buttonLogin: Button
-    lateinit var buttonNewUser:Button
+    lateinit var buttonNewUser: Button
     lateinit var checkBoxRecordarme: CheckBox
     lateinit var mediaPlayer: MediaPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
             val email = editTextEmail.text.toString()
             val clave = editTextPassword.text.toString()
             //Validaciones de datos requeridos y formatos
-            if(!validateRequiredData())
+            if (!validateRequiredData())
                 return@setOnClickListener
             //Guardar datos en preferencias.
             GuardarDatosEnPreferencias()
@@ -49,13 +50,14 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-        buttonNewUser.setOnClickListener{
+        buttonNewUser.setOnClickListener {
 
         }
-        mediaPlayer=MediaPlayer.create(this, R.raw.title_screen)
+        mediaPlayer = MediaPlayer.create(this, R.raw.title_screen)
         mediaPlayer.start()
     }
-    private fun validateRequiredData():Boolean{
+
+    private fun validateRequiredData(): Boolean {
         val email = editTextEmail.text.toString()
         val password = editTextPassword.text.toString()
         if (email.isEmpty()) {
@@ -75,32 +77,30 @@ class LoginActivity : AppCompatActivity() {
         }
         return true
     }
+
     override fun onDestroy() {
         mediaPlayer.release()
         super.onDestroy()
     }
 
-    private fun LeerDatosDePreferencias(){
-        val listadoLeido = manejadorArchivo.ReadInformation()
-        if(listadoLeido.first != null){
-            checkBoxRecordarme.isChecked = true
-        }
-        editTextEmail.setText ( listadoLeido.first )
-        editTextPassword.setText ( listadoLeido.second )
+
+    private fun GuardarDatosEnPreferencias() {
+        manejadorArchivo = SharedPreferencesManager(this)
+        manejadorArchivo.SaveInformation("juan" to "suarez")
+
+        manejadorArchivo = FileInternalManager(this)
+        manejadorArchivo.SaveInformation("juan" to "suarez")
+
     }
 
-    private fun GuardarDatosEnPreferencias(){
-        val email = editTextEmail.text.toString()
-        val clave = editTextPassword.text.toString()
-        val listadoAGrabar:Pair<String,String>
-        if(checkBoxRecordarme.isChecked){
-            listadoAGrabar = email to clave
-        }
-        else{
-            listadoAGrabar ="" to ""
-        }
-        manejadorArchivo.SaveInformation(listadoAGrabar)
+    private fun LeerDatosDePreferencias() {
+        var datoLeido: Pair<String, String>
+        manejadorArchivo = SharedPreferencesManager(this)
+        datoLeido = manejadorArchivo.ReadInformation()
+        Log.d("TAG", "SharedPreferences: $datoLeido")
+        manejadorArchivo = FileInternalManager(this)
+        Log.d("TAG", "FileInternal: ${manejadorArchivo.ReadInformation()}")
     }
 
 
-    }
+}

@@ -1,20 +1,33 @@
 package com.suarez.juan.cazarpatos
 
 import android.app.Activity
-import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
-class SharedPreferencesManager (val actividad: Activity): FileHandler {
+class SharedPreferencesManager(private val actividad: Activity) : FileHandler {
+
+    private val masterKey = MasterKey.Builder(actividad)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+
+    private val sharedPref = EncryptedSharedPreferences.create(
+        actividad,
+        "secure_prefs",
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+
     override fun SaveInformation(datosAGrabar: Pair<String, String>) {
-        val sharedPref = actividad.getPreferences(Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
-        editor.putString(LOGIN_KEY , datosAGrabar.first)
-        editor.putString(PASSWORD_KEY, datosAGrabar.second)
-        editor.apply()
+        sharedPref.edit()
+            .putString(LOGIN_KEY, datosAGrabar.first)
+            .putString(PASSWORD_KEY, datosAGrabar.second)
+            .apply()
     }
+
     override fun ReadInformation(): Pair<String, String> {
-        val sharedPref = actividad.getPreferences(Context.MODE_PRIVATE)
-        val email = sharedPref.getString(LOGIN_KEY,"").toString()
-        val clave = sharedPref.getString(PASSWORD_KEY,"").toString()
-        return (email to clave)
+        val email = sharedPref.getString(LOGIN_KEY, "") ?: ""
+        val clave = sharedPref.getString(PASSWORD_KEY, "") ?: ""
+        return email to clave
     }
 }
